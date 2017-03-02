@@ -17,17 +17,6 @@ public class MessageRequest : NetworkBehaviour
     }
     #endregion
 
-    #region 属性
-    private List<BaseMessage> _msgBuffer = new List<BaseMessage>();
-    public List<BaseMessage> msgBuffer
-    {
-        get
-        {
-            return _msgBuffer;
-        }
-    }
-    #endregion
-
     #region Client
     [Client]
     public void SendMessage(BaseMessage message)
@@ -35,20 +24,45 @@ public class MessageRequest : NetworkBehaviour
         CmdSendMessage(message);
     }
 
+    [ClientRpc]
+    public void RpcReturnMessage(byte[] bytes)
+    {
+        MessageQueue msgQueue = MessageManager.Instance.DesrializeMessageQueue(bytes);
+
+        if (!MessageManager.Instance.WaitMsgs.ContainsKey(msgQueue.frameIdx))
+        {
+            MessageManager.Instance.WaitMsgs.Add(msgQueue.frameIdx, msgQueue);
+        }
+    }
+    #endregion
+
+    #region Server
     [Command]
     public void CmdSendMessage(BaseMessage message)
     {
         ReceiveMessage(message);
     }
-    #endregion
 
-    #region Server
     [Server]
     public void ReceiveMessage(BaseMessage message)
     {
-        msgBuffer.Add(message);
+        MessageManager.Instance.MsgBuffer.Add(message);
+    }
 
-        Debug.Log(message.Type + ":" + message.PlayerId);
+    [Server]
+    public void ReturnMessage(long frameIdx)
+    {
+        BaseMessage[] msgs = MessageManager.Instance.MsgBuffer.ToArray();
+        MessageQueue msgQueue = new MessageQueue(frameIdx, msgs);
+
+        MessageManager.Instance.MsgBuffer.Clear();
+
+        if (!MessageManager.Instance.FrameMsgs.ContainsKey(frameIdx))
+        {
+            MessageManager.Instance.FrameMsgs.Add(frameIdx, msgQueue);
+        }
+
+        RpcReturnMessage(MessageManager.Instance.SerializeMessageQueue(msgQueue));
     }
     #endregion
 
