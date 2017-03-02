@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 public class MessageRequest : NetworkBehaviour
@@ -41,27 +42,18 @@ public class MessageRequest : NetworkBehaviour
     }
     #endregion
 
-
     #region Server
     [Server]
     public void ReceiveMessage(BaseMessage message)
     {
         msgBuffer.Add(message);
+
+        Debug.Log(message.Type + ":" + message.PlayerId);
     }
     #endregion
 
     private void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-        }
-        else
-        {
-            if (_instance != this)
-            {
-                Destroy(this);
-            }
-        }
+        _instance = this;
     }
 }

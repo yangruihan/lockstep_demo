@@ -1,9 +1,31 @@
 ﻿using System;
 
 [Serializable]
-public class BaseMessage {
+public class BaseMessage
+{
+    private byte _type;
+    public byte Type
+    {
+        set
+        {
+            _type = value;
+        }
+        get
+        {
+            return _type;
+        }
+    }
 
-    public byte type;
-    public uint playerId;
-
+    private uint _playerId;
+    public uint PlayerId
+    {
+        set
+        {
+            _playerId = value;
+        }
+        get
+        {
+            return _playerId;
+        }
+    }
 }
