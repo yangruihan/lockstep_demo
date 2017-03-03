@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 public class Player : NetworkBehaviour
 {
+    [SyncVar]
     private uint _playerId;
     public uint PlayerId
     {
@@ -39,8 +40,10 @@ public class Player : NetworkBehaviour
     [ClientCallback]
     private void Start()
     {
-        if (!isLocalPlayer) return;
-
-        GetReady();
+        if (isLocalPlayer)
+        {
+            GameManager.Instance.LocalPlayer = this;
+            GetReady();
+        }
     }
 }

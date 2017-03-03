@@ -19,6 +19,19 @@ public class GameManager : NetworkBehaviour
 
     public Dictionary<uint, Player> players = new Dictionary<uint, Player>();
 
+    public Player _localPlayer;
+    public Player LocalPlayer
+    {
+        set
+        {
+            _localPlayer = value;
+        }
+        get
+        {
+            return _localPlayer;
+        }
+    }
+
     public bool gameStart = false;
 
     private static uint currentPlayerId = 0;

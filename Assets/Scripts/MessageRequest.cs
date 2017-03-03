@@ -21,13 +21,13 @@ public class MessageRequest : NetworkBehaviour
     [Client]
     public void SendMessage(BaseMessage message)
     {
-        CmdSendMessage(message);
+        CmdSendMessage(MessageManager.Instance.SerializeObj<BaseMessage>(message));
     }
 
     [ClientRpc]
     public void RpcReturnMessage(byte[] bytes)
     {
-        MessageQueue msgQueue = MessageManager.Instance.DesrializeMessageQueue(bytes);
+        MessageQueue msgQueue = MessageManager.Instance.DesrializeObj<MessageQueue>(bytes);
 
         if (msgQueue != null && !MessageManager.Instance.WaitMsgs.ContainsKey(msgQueue.frameIdx))
         {
@@ -48,9 +48,9 @@ public class MessageRequest : NetworkBehaviour
 
     #region Server
     [Command]
-    public void CmdSendMessage(BaseMessage message)
+    public void CmdSendMessage(byte[] bytes)
     {
-        ReceiveMessage(message);
+        ReceiveMessage(bytes);
     }
 
     [Command]
@@ -60,9 +60,9 @@ public class MessageRequest : NetworkBehaviour
     }
 
     [Server]
-    public void ReceiveMessage(BaseMessage message)
+    public void ReceiveMessage(byte[] bytes)
     {
-        MessageManager.Instance.MsgBuffer.Add(message);
+        MessageManager.Instance.MsgBuffer.Add(MessageManager.Instance.DesrializeObj<BaseMessage>(bytes));
     }
 
     [Server]
@@ -78,7 +78,7 @@ public class MessageRequest : NetworkBehaviour
             MessageManager.Instance.FrameMsgs.Add(frameIdx, msgQueue);
         }
 
-        RpcReturnMessage(MessageManager.Instance.SerializeMessageQueue(msgQueue));
+        RpcReturnMessage(MessageManager.Instance.SerializeObj<MessageQueue>(msgQueue));
     }
 
     [Server]
@@ -91,12 +91,15 @@ public class MessageRequest : NetworkBehaviour
             msgQueue = MessageManager.Instance.FrameMsgs[frameIdx];
         }
 
-        RpcReturnMessage(MessageManager.Instance.SerializeMessageQueue(msgQueue));
+        RpcReturnMessage(MessageManager.Instance.SerializeObj<MessageQueue>(msgQueue));
     }
     #endregion
 
-    private void Awake()
+    private void Start()
     {
-        _instance = this;
+        if (isLocalPlayer)
+        {
+            _instance = this;
+        }
     }
 }

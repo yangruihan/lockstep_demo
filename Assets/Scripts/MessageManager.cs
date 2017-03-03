@@ -8,7 +8,7 @@ using System.IO;
 public class MessageManager : Singleton<MessageManager>
 {
     #region 属性
-    private static Dictionary<byte, Action<BaseMessage>> _msgHandlerMap = new Dictionary<byte, Action<BaseMessage>>();
+    private static Dictionary<byte, List<Action<BaseMessage>>> _msgHandlerMap = new Dictionary<byte, List<Action<BaseMessage>>>();
 
     private List<BaseMessage> _msgBuffer = new List<BaseMessage>();
     public List<BaseMessage> MsgBuffer
@@ -45,7 +45,18 @@ public class MessageManager : Singleton<MessageManager>
     /// <param name="action">Action.</param>
     public void RegisteMessage(byte type, Action<BaseMessage> action)
     {
-        _msgHandlerMap.Add(type, action);
+        List<Action<BaseMessage>> actions;
+        if (_msgHandlerMap.ContainsKey(type))
+        {
+            actions = _msgHandlerMap[type];
+            actions.Add(action);
+        }
+        else
+        {
+            actions = new List<Action<BaseMessage>>();
+            actions.Add(action);
+            _msgHandlerMap.Add(type, actions);
+        }
     }
 
     /// <summary>
@@ -53,7 +64,7 @@ public class MessageManager : Singleton<MessageManager>
     /// </summary>
     /// <returns>The action.</returns>
     /// <param name="type">Type.</param>
-    public Action<BaseMessage> GetAction(byte type)
+    public List<Action<BaseMessage>> GetActions(byte type)
     {
         if (_msgHandlerMap.ContainsKey(type))
         {
@@ -97,11 +108,11 @@ public class MessageManager : Singleton<MessageManager>
     /// </summary>
     /// <returns>The message queue.</returns>
     /// <param name="msgQueue">Message queue.</param>
-    public byte[] SerializeMessageQueue(MessageQueue msgQueue)
+    public byte[] SerializeObj<T>(T obj)
     {
         IFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream();
-        formatter.Serialize(stream, msgQueue);
+        formatter.Serialize(stream, obj);
         stream.Position = 0;
         byte[] buffer = new byte[stream.Length];
         stream.Read(buffer, 0, buffer.Length);
@@ -116,17 +127,17 @@ public class MessageManager : Singleton<MessageManager>
     /// </summary>
     /// <returns>The message queue.</returns>
     /// <param name="bytes">Bytes.</param>
-    public MessageQueue DesrializeMessageQueue(byte[] bytes)
+    public T DesrializeObj<T>(byte[] bytes)
     {
-        MessageQueue msgQueue;
+        T obj;
 
         IFormatter formatter = new BinaryFormatter();
         MemoryStream stream = new MemoryStream(bytes);
-        msgQueue = (MessageQueue)formatter.Deserialize(stream);
+        obj = (T)formatter.Deserialize(stream);
         stream.Flush();
         stream.Close();
 
-        return msgQueue;
+        return obj;
     }
 
     /// <summary>
@@ -135,11 +146,19 @@ public class MessageManager : Singleton<MessageManager>
     /// <param name="msg">Message.</param>
     public void HandleMessage(BaseMessage msg)
     {
-        Action<BaseMessage> action = GetAction(msg.Type);
+        List<Action<BaseMessage>> actions = GetActions(msg.Type);
 
-        if (action != null)
+        if (actions == null)
         {
-            action(msg);
+            DebugHelper.Instance.Log("Action null");
+        }
+
+        if (actions != null)
+        {
+            for (int i = 0; i < actions.Count; i++)
+            {
+                actions[i](msg);
+            }
         }
     }
 
