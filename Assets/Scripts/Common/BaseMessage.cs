@@ -4,9 +4,9 @@
 public class BaseMessage
 {
     private byte _type;
-    public byte Type
+	public byte Type
     {
-        set
+		protected set
         {
             _type = value;
         }

@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class MessageTest : NetworkBehaviour
 {
     uint i = 0;
-    float delay = 5f;
+    float delay = 2f;
     float timer = 0f;
 
     [ClientCallback]
@@ -21,9 +21,9 @@ public class MessageTest : NetworkBehaviour
             timer = 0;
 
             i++;
-            BaseMessage message = new BaseMessage();
-            message.PlayerId = i;
-            message.Type = 0;
+			StringMessage message = new StringMessage();
+            message.PlayerId = 1;
+			message.Content = "str: " + i;
 
             MessageRequest.Instance.SendMessage(message);
         }
