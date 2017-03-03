@@ -38,11 +38,21 @@ public class MessageManager : Singleton<MessageManager>
     }
     #endregion
 
+	/// <summary>
+	/// 注册消息
+	/// </summary>
+	/// <param name="type">Type.</param>
+	/// <param name="action">Action.</param>
     public void RegisteMessage(byte type, Action<BaseMessage> action)
     {
         _msgHandlerMap.Add(type, action);
     }
 
+	/// <summary>
+	/// 得到对应消息的回调函数
+	/// </summary>
+	/// <returns>The action.</returns>
+	/// <param name="type">Type.</param>
     public Action<BaseMessage> GetAction(byte type)
     {
         if (_msgHandlerMap.ContainsKey(type))
@@ -53,16 +63,30 @@ public class MessageManager : Singleton<MessageManager>
         return null;
     }
 
+	/// <summary>
+	/// 得到某一帧消息
+	/// </summary>
+	/// <returns>The messages.</returns>
+	/// <param name="frameIdx">Frame index.</param>
     public MessageQueue GetMessages(long frameIdx)
     {
         if (WaitMsgs.ContainsKey(frameIdx))
         {
-            return WaitMsgs[frameIdx];
+			return WaitMsgs [frameIdx];
         }
+		else
+		{
+			
+		}
 
         return null;
     }
 
+	/// <summary>
+	/// 序列化消息队列
+	/// </summary>
+	/// <returns>The message queue.</returns>
+	/// <param name="msgQueue">Message queue.</param>
     public byte[] SerializeMessageQueue(MessageQueue msgQueue)
     {
         IFormatter formatter = new BinaryFormatter();
@@ -77,6 +101,11 @@ public class MessageManager : Singleton<MessageManager>
         return buffer;
     }
 
+	/// <summary>
+	/// 反序列化消息队列
+	/// </summary>
+	/// <returns>The message queue.</returns>
+	/// <param name="bytes">Bytes.</param>
     public MessageQueue DesrializeMessageQueue(byte[] bytes)
     {
         MessageQueue msgQueue;
@@ -89,4 +118,26 @@ public class MessageManager : Singleton<MessageManager>
 
         return msgQueue;
     }
+
+	/// <summary>
+	/// 处理消息
+	/// </summary>
+	/// <param name="msg">Message.</param>
+	public void HandleMessage(BaseMessage msg)
+	{
+		Action<BaseMessage> action = GetAction (msg.Type);
+
+		if (action != null)
+		{
+			action (msg);
+		}
+	}
+
+	public void RemoveWaitMessage(long frameIdx)
+	{
+		if (WaitMsgs.ContainsKey(frameIdx))
+		{
+			WaitMsgs.Remove (frameIdx);
+		}	
+	}
 }

@@ -34,6 +34,16 @@ public class MessageRequest : NetworkBehaviour
             MessageManager.Instance.WaitMsgs.Add(msgQueue.frameIdx, msgQueue);
         }
     }
+
+	/// <summary>
+	/// 请求某一帧的消息队列
+	/// </summary>
+	/// <param name="frameIdx">Frame index.</param>
+	[Client]
+	public void RequestMessageQueueAtFrame(long frameIdx)
+	{
+		
+	}
     #endregion
 
     #region Server

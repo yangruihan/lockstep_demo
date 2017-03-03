@@ -9,8 +9,13 @@ public class MessageTest : NetworkBehaviour
     float delay = 2f;
     float timer = 0f;
 
-    [ClientCallback]
+	[ClientCallback]
+	private void Start()
+	{
+		MessageManager.Instance.RegisteMessage (MessageType.STRING_MSG, OnStringMessageRecived);
+	}
 
+    [ClientCallback]
     private void Update()
     {
         if (!isLocalPlayer) return;
@@ -28,4 +33,14 @@ public class MessageTest : NetworkBehaviour
             MessageRequest.Instance.SendMessage(message);
         }
     }
+
+	public void OnStringMessageRecived(BaseMessage msg)
+	{
+		StringMessage strMsg = msg as StringMessage;
+
+		if (strMsg != null)
+		{
+			Debug.Log ("OnStringMessageRecived" + strMsg.Content);
+		}
+	}
 }

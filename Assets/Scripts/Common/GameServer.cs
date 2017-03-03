@@ -15,6 +15,8 @@ public class GameServer : NetworkBehaviour
         }
     }
     #endregion
+
+	[SyncVar]
     public long frameIdx = 0;  // 帧号
 
     private float _accumilatedTime = 0f;

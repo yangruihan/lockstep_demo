@@ -17,8 +17,8 @@ public class LockstepManager : NetworkBehaviour
 
     public long frameIdx = 0;  // 帧号
 
-    private float _accumilatedTime = 0f;
-    private float _frameLength = 0.05f;
+	private float _accumilatedTime = 0f;
+	private float _frameLength = 0.025f;
 
     private void Awake()
     {
@@ -28,40 +28,52 @@ public class LockstepManager : NetworkBehaviour
     [ClientCallback]
     private void Update()
     {
-        _accumilatedTime = _accumilatedTime + Time.deltaTime;
+		_accumilatedTime = _accumilatedTime + Time.deltaTime;
 
-        while (_accumilatedTime > _frameLength)
-        {
-            GameFrameTurn();
-            _accumilatedTime = _accumilatedTime - _frameLength;
-        }
-    }
+		while (_accumilatedTime > _frameLength) {
+		
+			while (HasNextFrame ()) {
+				GameFrameTurn ();
+			}
+
+			_accumilatedTime = _accumilatedTime - _frameLength;
+		}
+	}
 
     #region Client
+	[Client]
+	private bool HasNextFrame()
+	{
+		return !(MessageManager.Instance.GetMessages (frameIdx) == null);
+	}
+
     [Client]
     private void GameFrameTurn()
     {
-        ReceiveMessages();
+		if (HandleMessages())
+		{
+			frameIdx++;
+		}
     }
 
     [Client]
-    private void ReceiveMessages()
+	private bool HandleMessages()
     {
         MessageQueue msgQueue = MessageManager.Instance.GetMessages(frameIdx);
 
         if (msgQueue != null)
         {
-            foreach (var msg in msgQueue.messages)
-            {
-				if (msg.Type == MessageType.STRING_MSG)
-				{
-					StringMessage smsg = msg as StringMessage;
-					Debug.Log (smsg.Content);
-				}
-            }
+			for (int i = 0; i < msgQueue.messages.Length; i++)
+			{
+				MessageManager.Instance.HandleMessage (msgQueue.messages [i]);
+			}
 
-            frameIdx++;
+			MessageManager.Instance.RemoveWaitMessage (frameIdx);
+
+			return true;
         }
+
+		return false;
     }
     #endregion
 }
