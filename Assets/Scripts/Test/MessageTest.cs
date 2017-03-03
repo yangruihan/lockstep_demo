@@ -9,12 +9,6 @@ public class MessageTest : NetworkBehaviour
     float delay = 2f;
     float timer = 0f;
 
-	[ClientCallback]
-	private void Start()
-	{
-		MessageManager.Instance.RegisteMessage (MessageType.STRING_MSG, OnStringMessageRecived);
-	}
-
     [ClientCallback]
     private void Update()
     {
@@ -27,20 +21,10 @@ public class MessageTest : NetworkBehaviour
 
             i++;
 			StringMessage message = new StringMessage();
-            message.PlayerId = 1;
+			message.PlayerId = (uint)playerControllerId;
 			message.Content = "str: " + i;
 
             MessageRequest.Instance.SendMessage(message);
         }
     }
-
-	public void OnStringMessageRecived(BaseMessage msg)
-	{
-		StringMessage strMsg = msg as StringMessage;
-
-		if (strMsg != null)
-		{
-			Debug.Log ("OnStringMessageRecived" + strMsg.Content);
-		}
-	}
 }

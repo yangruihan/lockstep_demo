@@ -68,7 +68,7 @@ public class LockstepManager : NetworkBehaviour
 				MessageManager.Instance.HandleMessage (msgQueue.messages [i]);
 			}
 
-			MessageManager.Instance.RemoveWaitMessage (frameIdx);
+			MessageManager.Instance.CompleteMessageQueue (frameIdx);
 
 			return true;
         }

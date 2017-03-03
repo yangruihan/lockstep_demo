@@ -133,6 +133,11 @@ public class MessageManager : Singleton<MessageManager>
 		}
 	}
 
+	public void CompleteMessageQueue(long frameIdx)
+	{
+		RemoveWaitMessage (frameIdx);
+	}
+
 	public void RemoveWaitMessage(long frameIdx)
 	{
 		if (WaitMsgs.ContainsKey(frameIdx))
