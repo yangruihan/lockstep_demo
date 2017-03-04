@@ -84,13 +84,28 @@ public class Player : NetworkBehaviour
     {
         GameManager.Instance.AddPlayer(this);
 
+        SpawnRoleObj();
+
         if (isLocalPlayer)
         {
-            GameManager.Instance.LocalPlayer = this;
-            GetReady();
+            InitLocalPlayer();
         }
+        else
+        {
+            InitRemotePlayer();
+        }
+    }
 
-        SpawnRoleObj();
+    private void InitLocalPlayer()
+    {
+        GameManager.Instance.LocalPlayer = this;
+        GetReady();
+    }
+
+    private void InitRemotePlayer()
+    {
+        // 取消照相机
+        roleObj.transform.FindChild("RoleCamera").gameObject.SetActive(false);
     }
 
     private void SpawnRoleObj()
