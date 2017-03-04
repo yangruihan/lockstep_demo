@@ -50,6 +50,13 @@ public class Player : NetworkBehaviour
     #endregion
 
     private GameObject roleObj;
+    public GameObject RoleObj
+    {
+        get
+        {
+            return roleObj;
+        }
+    }
 
     public T GetObjComponent<T>()
     {
@@ -90,22 +97,12 @@ public class Player : NetworkBehaviour
         {
             InitLocalPlayer();
         }
-        else
-        {
-            InitRemotePlayer();
-        }
     }
 
     private void InitLocalPlayer()
     {
         GameManager.Instance.LocalPlayer = this;
         GetReady();
-    }
-
-    private void InitRemotePlayer()
-    {
-        // 取消照相机
-        roleObj.transform.FindChild("RoleCamera").gameObject.SetActive(false);
     }
 
     private void SpawnRoleObj()

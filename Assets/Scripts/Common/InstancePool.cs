@@ -5,7 +5,6 @@
 /// </summary>
 public interface IPoolable
 {
-
     void OnAwakeFromPool();
 
     void OnReturnToPool();

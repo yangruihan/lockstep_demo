@@ -5,6 +5,8 @@
 /// </summary>
 public class MovementComponent : MonoBehaviour
 {
+    public float accelerationForce = 1.5f;
+
     private Rigidbody2D rigidBody;
 
     private void Start()
@@ -14,6 +16,6 @@ public class MovementComponent : MonoBehaviour
 
     public void OnMoveMsgReceived(MoveMessage msg)
     {
-        rigidBody.AddForce(new Vector2(msg.X, msg.Y));
+        rigidBody.AddForce(new Vector2(msg.X * accelerationForce, msg.Y * accelerationForce));
     }
 }

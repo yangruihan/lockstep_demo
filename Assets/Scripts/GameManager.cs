@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,7 +20,7 @@ public class GameManager : NetworkBehaviour
 
     public Dictionary<uint, Player> players = new Dictionary<uint, Player>();
 
-    public Player _localPlayer;
+    private Player _localPlayer;
     public Player LocalPlayer
     {
         set
@@ -35,6 +36,9 @@ public class GameManager : NetworkBehaviour
     public bool gameStart = false;              // 游戏开始的标志
 
     public GameObject rolePrefab;               // 角色prefab
+
+    public int gameWidth = 100;                 // 游戏场景宽度
+    public int gameHeight = 100;                // 游戏场景高度
 
     private static uint currentPlayerId = 0;    // 当前玩家的id号，用于分配id
     private uint _readyCount = 0;               // 准备好的玩家数量，用于判断是否开始游戏
@@ -53,14 +57,18 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <param name="playerId"></param>
     /// <returns></returns>
+    [Server]
     public Color GetRandomColor(uint playerId)
     {
-        return new Color(RandomHelper.Instance.GetRandomInt(255) / 255f, RandomHelper.Instance.GetRandomInt(255) / 255f, RandomHelper.Instance.GetRandomInt(255) / 255f);
+        System.Random random = new System.Random();
+        return new Color(random.Next(255) / 255f, random.Next(255) / 255f, random.Next(255) / 255f);
     }
 
+    [Server]
     public Vector3 GetRandomPosition(uint playerId)
     {
-        return new Vector3(RandomHelper.Instance.GetRandomInt(5), RandomHelper.Instance.GetRandomInt(5), 1);
+        System.Random random = new System.Random();
+        return new Vector3(random.Next(gameWidth), random.Next(gameHeight), 1);
     }
 
     public T GetPlayerComponent<T>(uint playerId)
