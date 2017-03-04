@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 public class Player : NetworkBehaviour
 {
+    #region 属性
     [SyncVar]
     private uint _playerId;
     public uint PlayerId
@@ -32,6 +33,21 @@ public class Player : NetworkBehaviour
             return _playerColor;
         }
     }
+
+    [SyncVar]
+    private Vector3 _spawnPosition;
+    public Vector3 SpawnPosition
+    {
+        set
+        {
+            _spawnPosition = value;
+        }
+        get
+        {
+            return _spawnPosition;
+        }
+    }
+    #endregion
 
     private GameObject roleObj;
 
@@ -71,8 +87,8 @@ public class Player : NetworkBehaviour
 
     private void SpawnRoleObj()
     {
-        roleObj = GameManager.Instance.rolePrefab;
-        Instantiate(roleObj);
+        roleObj = Instantiate(GameManager.Instance.rolePrefab, SpawnPosition, Quaternion.identity);
+        roleObj.name = "Role" + PlayerId;
 
         InitRole();
     }

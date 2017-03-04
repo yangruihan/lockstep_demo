@@ -19,8 +19,6 @@ public class GameManager : NetworkBehaviour
 
     public Dictionary<uint, Player> players = new Dictionary<uint, Player>();
 
-    private Color[] _colors = { Color.red, Color.yellow, Color.green, Color.blue };
-
     public Player _localPlayer;
     public Player LocalPlayer
     {
@@ -55,11 +53,14 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <param name="playerId"></param>
     /// <returns></returns>
-    public Color GetValidColor(uint playerId)
+    public Color GetRandomColor(uint playerId)
     {
-        Debug.Log(playerId);
+        return new Color(RandomHelper.Instance.GetRandomInt(255) / 255f, RandomHelper.Instance.GetRandomInt(255) / 255f, RandomHelper.Instance.GetRandomInt(255) / 255f);
+    }
 
-        return _colors[playerId % _colors.Length];
+    public Vector3 GetRandomPosition(uint playerId)
+    {
+        return new Vector3(RandomHelper.Instance.GetRandomInt(5), RandomHelper.Instance.GetRandomInt(5), 1);
     }
 
     [Server]
