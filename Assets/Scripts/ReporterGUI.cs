@@ -5,6 +5,8 @@ public class ReporterGUI : MonoBehaviour
     Reporter reporter;
     void Awake()
     {
+        DontDestroyOnLoad(this);
+
         reporter = FindObjectOfType<Reporter>();
         if (reporter != null)
         {
