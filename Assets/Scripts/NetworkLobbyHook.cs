@@ -4,13 +4,14 @@ using UnityEngine;
 using Prototype.NetworkLobby;
 using UnityEngine.Networking;
 
-public class NetworkLobbyHook : LobbyHook {
+public class NetworkLobbyHook : LobbyHook
+{
+    public override void OnLobbyServerSceneLoadedForPlayer(NetworkManager manager, GameObject lobbyPlayer, GameObject gamePlayer)
+    {
+        Player player = gamePlayer.GetComponent<Player>();
 
-	public override void OnLobbyServerSceneLoadedForPlayer(NetworkManager manager, GameObject lobbyPlayer, GameObject gamePlayer)
-	{
-		Player player = gamePlayer.GetComponent<Player> ();
-
-		player.PlayerId = GameManager.Instance.GetValidPlayerId ();
-		GameManager.Instance.AddPlayer (player);
-	}
+        player.PlayerId = GameManager.Instance.GetValidPlayerId();
+        player.PlayerColor = GameManager.Instance.GetValidColor(player.PlayerId);
+        GameManager.Instance.AddPlayer(player);
+    }
 }

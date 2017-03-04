@@ -19,12 +19,31 @@ public class Player : NetworkBehaviour
         }
     }
 
+    [SyncVar]
+    private Color _playerColor;
+    public Color PlayerColor
+    {
+        set
+        {
+            _playerColor = value;
+        }
+        get
+        {
+            return _playerColor;
+        }
+    }
+
+    private GameObject roleObj;
+
+    #region Client
     [Client]
     private void GetReady()
     {
         CmdGetReady();
     }
+    #endregion
 
+    #region Server
     [Command]
     private void CmdGetReady()
     {
@@ -36,6 +55,7 @@ public class Player : NetworkBehaviour
     {
         GameManager.Instance.PlayerGetReady();
     }
+    #endregion
 
     [ClientCallback]
     private void Start()
@@ -45,5 +65,21 @@ public class Player : NetworkBehaviour
             GameManager.Instance.LocalPlayer = this;
             GetReady();
         }
+
+        SpawnRoleObj();
+    }
+
+    private void SpawnRoleObj()
+    {
+        roleObj = GameManager.Instance.rolePrefab;
+        Instantiate(roleObj);
+
+        InitRole();
+    }
+
+    private void InitRole()
+    {
+        SpriteRenderer image = roleObj.GetComponentInChildren<SpriteRenderer>();
+        image.color = PlayerColor;
     }
 }

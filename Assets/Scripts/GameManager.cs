@@ -19,6 +19,8 @@ public class GameManager : NetworkBehaviour
 
     public Dictionary<uint, Player> players = new Dictionary<uint, Player>();
 
+    private Color[] _colors = { Color.red, Color.yellow, Color.green, Color.blue };
+
     public Player _localPlayer;
     public Player LocalPlayer
     {
@@ -32,14 +34,32 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public bool gameStart = false;
+    public bool gameStart = false;              // 游戏开始的标志
 
-    private static uint currentPlayerId = 0;
-    private uint _readyCount = 0;
+    public GameObject rolePrefab;               // 角色prefab
 
+    private static uint currentPlayerId = 0;    // 当前玩家的id号，用于分配id
+    private uint _readyCount = 0;               // 准备好的玩家数量，用于判断是否开始游戏
+
+    /// <summary>
+    /// 得到一个合法的玩家id
+    /// </summary>
+    /// <returns></returns>
     public uint GetValidPlayerId()
     {
         return currentPlayerId++;
+    }
+
+    /// <summary>
+    /// 得到一个合法的颜色
+    /// </summary>
+    /// <param name="playerId"></param>
+    /// <returns></returns>
+    public Color GetValidColor(uint playerId)
+    {
+        Debug.Log(playerId);
+
+        return _colors[playerId % _colors.Length];
     }
 
     [Server]
