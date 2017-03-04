@@ -13,6 +13,7 @@ public class NetworkLobbyHook : LobbyHook
         player.PlayerId = GameManager.Instance.GetValidPlayerId();
         player.PlayerColor = GameManager.Instance.GetRandomColor(player.PlayerId);
         player.SpawnPosition = GameManager.Instance.GetRandomPosition(player.PlayerId);
+
         GameManager.Instance.AddPlayer(player);
     }
 }

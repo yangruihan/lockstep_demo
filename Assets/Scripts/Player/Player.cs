@@ -51,6 +51,12 @@ public class Player : NetworkBehaviour
 
     private GameObject roleObj;
 
+    public T GetObjComponent<T>()
+    {
+        T t = roleObj.GetComponent<T>();
+        return t;
+    }
+
     #region Client
     [Client]
     private void GetReady()
@@ -76,6 +82,8 @@ public class Player : NetworkBehaviour
     [ClientCallback]
     private void Start()
     {
+        GameManager.Instance.AddPlayer(this);
+
         if (isLocalPlayer)
         {
             GameManager.Instance.LocalPlayer = this;

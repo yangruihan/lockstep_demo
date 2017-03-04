@@ -63,6 +63,14 @@ public class GameManager : NetworkBehaviour
         return new Vector3(RandomHelper.Instance.GetRandomInt(5), RandomHelper.Instance.GetRandomInt(5), 1);
     }
 
+    public T GetPlayerComponent<T>(uint playerId)
+    {
+        if (players.ContainsKey(playerId))
+            return players[playerId].GetObjComponent<T>();
+        else
+            return default(T);
+    }
+
     [Server]
     public void PlayerGetReady()
     {
